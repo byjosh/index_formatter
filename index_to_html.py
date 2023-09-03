@@ -73,8 +73,20 @@ def create_page_html():
     entries = create_master_dict(csv_input_filename)
     sorted_keys = sorted(entries.keys(), key=str.casefold)
     output = html_page_components.get_html_header(title)
+    
     def tuple_string(entry_tuple):
-        return entry_tuple.location.book + entry_tuple.location.page
+        """Function used to get key for ordering book - relies on last char of book sting being a digit"""
+        book_num = entry_tuple.location.book.strip()[-1:]
+        page_num = entry_tuple.location.page
+        if book_num.isdigit() and page_num.isdigit():
+            #so book 4 page 40 is not more than book 6 page 7 use x 1000
+            float_value =(int(book_num)*1000)+int(page_num)
+            # use a string anyway so results are comparable
+            return str(float_value)
+        elif not book_num.isdigit() or not page_num.isdigit():
+            # it went wrong - use a string
+            print(f'For better ordering have last character of {entry_tuple.location.book} as number not {book_num} and {page_num} as number')
+            return f'{book_num}-{page_num}'  
 
     for key in sorted_keys:
         list_of_Entry_tuples = sorted(entries[key], key=tuple_string)
