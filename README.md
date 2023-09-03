@@ -29,6 +29,5 @@ entry, page, book, notes
 
 Remove any row of column labels before using the script (or modify script to have that as an option). Any lines without an entry in first column are ignored for output
 
-The order seen in the output will currently put an entry under a term that is `Book 2 - 10` before `Book 2 - 110` (impeccable) - but will put `Book 4 - 40` before `Book 4 - 5` (a minor TODO - not usually that many pages referenced per term).
-
+The order seen for the page numbers for each entry will work best if all book references end so last character is a number (whether `book 3`, `volume 3`, `101.3`) and the page number is a number with no other characters (so: `100` ; not `100-102`) - but the comparison function uses strings to make the comparison - just in case you don't follow these rules. But unless an entry has a half a dozen or more pages referenced one can probably spot the correct order at a glance even if your input data does not play nice with the comparison function.
 
