@@ -3,7 +3,7 @@ Take a comma separated values file (CSV) for an index and output it as file
 
 ## Running the script
 
-Put your input CSV file (called input.csv in exmples below) in same folder as the index_to_html.py script.
+Put your input CSV file (called input.csv in examples below) in same folder as the index_to_html.py script.
 
 index_to_html.py is the script to run in the terminal or Powershell
 
