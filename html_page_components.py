@@ -19,7 +19,7 @@ def get_html_header(title: str = None) -> str:
         /* This is an inline stylesheet so */
             .entrycontainer {
                 /* This is space between each entry term*/
-                 margin-top: 5px;
+                 margin-top: 0px;
                 }
             .moredetails {
                 display: block;
