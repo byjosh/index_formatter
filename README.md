@@ -27,7 +27,7 @@ entry,  book, page, notes
 "apple","Book 1", 5,  "often mentioned when teaching letter A in English alphabet"
 ```
 ### Input with page number column before book column
-Run with `page` as a final argument as`python3 index_to_html.py test_page_before_book.csv output_file_title  page` or `python3.exe .\index_to_html.py .\test_page_before_book.csv output_file_title  page` the column layout in the CSV can be entry (e.g. "apple"), page number, book number (e.g. Book 1), notes (e.g. "often mentioned in connection with teaching the alphabet in English")
+Run with `page` as a final argument as `python3 index_to_html.py test_page_before_book.csv output_file_title  page` or `python3.exe .\index_to_html.py .\test_page_before_book.csv output_file_title  page` the column layout in the CSV can be entry (e.g. "apple"), page number, book number (e.g. Book 1), notes (e.g. "often mentioned in connection with teaching the alphabet in English")
 
 
 
@@ -40,3 +40,6 @@ Remove any row of column labels before using the script (or modify script to hav
 
 The order seen for the page numbers for each entry will work best if all book references end so last character is a number (whether `book 3`, `volume 3`, `101.3`) and the page number is a number with no other characters (so: `100` ; not `100-102`) - but the comparison function uses strings to make the comparison - just in case you don't follow these rules. But unless an entry has a half a dozen or more pages referenced one can probably spot the correct order at a glance even if your input data does not play nice with the comparison function.
 
+### Test files
+`test_book_before_page.csv` and `test_page_before_book.csv` are provided as test files. With the latter the optional `page` argument is needed as final argument like `python3 index_to_html.py test_page_before_book.csv output_file_title  page` or `python3.exe .\index_to_html.py .\test_page_before_book.csv output_file_title  page` - with `test_book_before_page.csv` that final argument can and indeed should be omitted (as the default column order is `entry,  book, page, notes`).
+##
