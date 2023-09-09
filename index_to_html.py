@@ -10,35 +10,68 @@ import sys
 from os import path
 import logging
 import html
+import argparse
 
 # if you want to see the master dictionary created change logging.FATAL to logging.DEBUG
-logging.basicConfig(level=logging.FATAL)
+logging.basicConfig(level=logging.DEBUG)
 
 """have Location tuple with book and page, then list of tuples consisting of (book, page num, entry)"""
 Location = namedtuple('Location', 'book page')
-Entry = namedtuple('Entry', 'location notes')
-
+Entry = namedtuple('Entry', 'location notes taglist chapter')
+tagseparator = ": "
+outputseparator = '--'
 csv_input_filename = None
 title = None
+order = 'ebpnt'
+""" The inputs that we want are 
+inputfile [required]
+title [optional]
+field order [optional]
+output [optional ]
+tags [optional]
+
+The default is it takes a CSV, outputs an HTML file, does not add entries based on tags, 
+and has a field order of entry, book, page, notes, tags
+
+possible orders are (grounds for using a switch case perhaps)
+"""
+field_orders = ['ebpnt',
+                'ebcpnt',
+                'enbcpt',
+                'enbpt',
+                'bpent',
+                'bcpent',
+                ]
 
 
-def print_usage():
-    """Usage notes for this script"""
-    script_name_not_windows = sys.argv[0].lstrip(".\\")
-    script_name_windows = ".\\" + sys.argv[0].lstrip(".\\")
-    print(
-        "please supply the name of a CSV file as first argument - one can supply also an output title and specify page as 3rd parameter ")
-    print(f'The book column is presumed to come before the page column - so entry, book #, page #, notes ')
-    print(f'page as final argument allows for column order of: entry, page #, book #, notes ')
-    print(f'So command on Mac/Linux like: python3 {script_name_not_windows} input.csv output_file_title ')
-    print(f'or on Windows like: python3.exe {script_name_windows} .\input.csv output_file_title')
-    print(
-        f'with optional page parameter on Windows like: python3.exe {script_name_windows} .\input.csv output_file_title  page')
-    print('With output_file_title of "my index"  (surround with quotes if it contains spaces) ')
-    print("& at 2pm 1st Sept 2030 the output file is my index_as_html_20300901-140000.html")
-    return
+parser = argparse.ArgumentParser(prog="index_as_html.py",
+                                 description="takes a CSV file with columns for entry, book #, [chapter#] , page#, description and tags fields (not necessarily in that order and outputs order HTML or a CSV with tags prepended to the entry")
+
+parser.add_argument('inputCSVfile',
+                    help='input CSV file to be processed - see README and help below re: order of columns needed')
+parser.add_argument('-o', '--outputtitle', action='store', help="title used in naming output document and in HTML head")
+parser.add_argument('-f', '--fields', action='store',choices=field_orders,
+                    help=f'specify order of columns (fields) in your CSV file where each letter is initial letter of following (might call your columns slightly differently but this make clear function of each column):\nEntry (what you look up in index e.g. apple),\nBook (or volume e.g. vol 1) , \nChapter [optional], Notes (notes or description on Entry item e.g. popular fruit), \nTags [optional in sense program will check if this is empty column] - comma separated list of classifications that might apply to the entry e.g. for apple depending on context: fruit, tree, cooking, literacy, physics, Abrahamic religion (those are just examples - in botanical context just fruit and tree would be relevant)')
+parser.add_argument('-t', '--tags', action='store_true',
+                    help=f'process tags so that entries are added with the tag prepended to the entry - using tag separator (defaults to {tagseparator} )')
+parser.add_argument('-ts','--tagseparator',action='store',help=f'The separator between a tag and an entry when adding an entry of tag tagseparator entry default set to { tagseparator} - likely a colon followed by a space')
+parser.add_argument('-c', '--csv', action='store_true', help='output file as CSV - if used in conjunctions')
+parser.add_argument('-os','--outputseparator',action='store',help='when outputting HTML the book, chapter, page numbers will be concatenated and joined this seperator is between them')
 
 
+
+args = parser.parse_args()
+print(args)
+# set various fields away from defaults
+csv_input_filename = html.escape(args.inputCSVfile)
+if args.outputtitle:
+    title = html.escape(args.outputtitle)
+if args.fields:
+    order = html.escape(args.fields)
+if args.tagseparator:
+    tagseparator = html.escape(args.tagseparator)
+if args.outputseparator:
+    outputseparator = html.escape(args.outputseparator)
 def not_file(file):
     """Test file is missing"""
     if path.isfile(file):
@@ -56,21 +89,14 @@ def not_csv(file):
 
 
 logging.debug(sys.argv)
-order = None
-if len(sys.argv) < 2:
-    print_usage()
-    exit()
-elif not_file(sys.argv[1]) or not_csv(sys.argv[1]):
+
+
+if not_file(csv_input_filename) or not_csv(csv_input_filename):
     print("first argument does not exist as file or is not a .csv file")
     exit()
-elif len(sys.argv) == 2:
-    csv_input_filename = html.escape(sys.argv[1])
-elif len(sys.argv) == 3 and isinstance(sys.argv[1], str):
-    csv_input_filename = html.escape(sys.argv[1])
-    title = html.escape(sys.argv[2])
+
 elif len(sys.argv) == 4 and isinstance(sys.argv[1], str):
-    csv_input_filename = html.escape(sys.argv[1])
-    title = html.escape(sys.argv[2])
+
     logging.info(sys.argv)
     logging.info(sys.argv[3])
     if isinstance(sys.argv[3], str) and sys.argv[3] in ["page", 'book']:
@@ -82,6 +108,8 @@ elif len(sys.argv) == 4 and isinstance(sys.argv[1], str):
         exit()
 
 logging.info(f'Order is {order} first')
+
+
 # Export your index as a comma separated values file (CSV format)
 # have the strings quoted in double quotes like "this"
 # filename - rename this to your CSV file
@@ -95,21 +123,40 @@ def create_master_dict(csv_input_filename: str) -> dict:  #
     with open(csv_input_filename, encoding='utf-8') as csvfile:
 
         index_reader = csv.reader(csvfile, delimiter=',', quotechar='"')
+        entry = order.find('e')
+        book = order.find('b')
+        chapter = order.find('c')
+        page = order.find('p')
+        notes = order.find('n')
+        tags = order.find('t')
+        chapter_no = None
+        taglist = None
 
         for row in index_reader:
+            if chapter != -1:
+                chapter_no = row[chapter]
+            else:
+                chapter_no = None
+            if len(row) == len(order):
+                taglist = row[tags]
+            else:
+                taglist = None
             logging.debug(f'Current row is {row}')
-            if row[0] in master_dict.keys():
-                if order == 'page':
-                    master_dict[row[0]].append(Entry(Location(row[2], row[1]), row[3]))
-                elif order is None or order == 'book':
-                    # TODO: check row and abstract this test to once per row
-                    master_dict[row[0]].append(Entry(Location(row[1], row[2]), row[3]))
-            elif row[0] not in master_dict.keys() and row[0].strip() != '':
-                # the row[0].strip() != '' condition means if there is no entry in first column line is ignored
-                if order == 'page':
-                    master_dict[row[0]] = [Entry(Location(row[2], row[1]), row[3])]
-                elif order is None or order == 'book':
-                    master_dict[row[0]] = [Entry(Location(row[1], row[2]), row[3])]
+            if row[entry] in master_dict.keys():
+                master_dict[row[entry]].append(Entry(Location(row[book], row[page]), row[notes],taglist,chapter_no))
+            elif row[entry] not in master_dict.keys() and row[entry].strip() != '':
+                # the row[entry].strip() != '' means ignore line if no entry
+                master_dict[row[entry]] = [Entry(Location(row[book], row[page]), row[notes],taglist,chapter_no)]
+            if args.tags is True and taglist is not None:
+                for current_tag in taglist.split(','):
+                    current_tag = current_tag.strip()
+                    current_tag_entry = f'{current_tag}{tagseparator}{row[entry]}'
+                    if current_tag_entry in master_dict.keys():
+                        master_dict[current_tag_entry].append(
+                                Entry(Location(row[book], row[page]), row[notes], taglist, chapter_no))
+                    elif current_tag_entry not in master_dict.keys() and row[entry].strip() != '':
+                        # the row[entry].strip() != '' means ignore line if no entry
+                        master_dict[current_tag_entry] = [Entry(Location(row[book], row[page]), row[notes], taglist, chapter_no)]
         logging.debug(f'dictionary of entries generated is {master_dict}')
     return master_dict
 
@@ -161,4 +208,5 @@ def write_page_to_file():
 
 
 if csv_input_filename is not None:
-    write_page_to_file()
+    #write_page_to_file()
+    create_master_dict(csv_input_filename)
