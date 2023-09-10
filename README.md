@@ -5,17 +5,17 @@ If you don't run `git clone https://github.com/byjosh/index_formatter.git` comma
 
 ## Running the script
 
-Put your input CSV file (called `test_book_before_page.csv` or `test_page_before_book.csv` in examples below depending on whether input file has book before page number column or vice versa) in same folder as the index_to_html.py script (so where you unzipped the files - or cloned them if you did a git clone).
+Put your input CSV file (called `test_book_before_page.csv` or `test_page_before_book.csv` in examples below depending on whether input file has book before page number column or vice versa) in same folder as the index_formatter.py script (so where you unzipped the files - or cloned them if you did a git clone).
 
-index_to_html.py is the script to run in the terminal or Powershell. The default input CSV column order is Entry, Book, Page, Notes, Tags (see **Input file column order** section below)
+index_formatter.py is the script to run in the terminal or Powershell. The default input CSV column order is Entry, Book, Page, Notes, Tags (see **Input file column order** section below)
 
 Command to run in Mac/Linux terminal is like: 
 
-`python3 index_to_html.py test_book_before_page.csv -o "output_file_title"`
+`python3 index_formatter.py test_book_before_page.csv -o "output_file_title"`
 
 or on Windows in Powershell the command is like: 
 
-`python3.exe .\index_to_html.py .\test_book_before_page.csv -o "output_file_title"`
+`python3.exe .\index_formatter.py .\test_book_before_page.csv -o "output_file_title"`
 
 Change `test_book_before_page.csv` and  `output_file_title` to appropriate values (though leave as is and it will test the script with the provided test file: test_book_before_page.csv.
 ### A couple of options
@@ -25,7 +25,7 @@ Change `test_book_before_page.csv` and  `output_file_title` to appropriate value
 
 On Windows in Powershell the command using those options is like: 
 
-`python3.exe .\index_to_html.py .\test_book_before_page.csv -o "output_file_title" -c -t`
+`python3.exe .\index_formatter.py .\test_book_before_page.csv -o "output_file_title" -c -t`
 
 It comes with built in help - so experiment.
 
@@ -97,4 +97,4 @@ Remove any row of column labels before using the script (or modify script to hav
 The order seen for the page numbers for each entry will work best if all book references end so last character is a number (whether `book 3`, `volume 3`, `101.3`) and the page number is a number with no other characters (so: `100` ; not `100-102`) - but the comparison function uses strings to make the comparison - just in case you don't follow these rules. But unless an entry has a half a dozen or more pages referenced one can probably spot the correct order at a glance even if your input data does not play nice with the comparison function.
 
 ## Test files
-`test_book_before_page.csv` and `test_page_before_book.csv` are provided as test files. With the latter the optional `-f=epbnt` argument is needed as final argument like `python3 index_to_html.py test_page_before_book.csv output_file_title  -f=epbnt` or `python3.exe .\index_to_html.py .\test_page_before_book.csv output_file_title  -f=epbnt`.
+`test_book_before_page.csv` and `test_page_before_book.csv` are provided as test files. With the latter the optional `-f=epbnt` argument is needed as final argument like `python3 index_formatter.py test_page_before_book.csv output_file_title  -f=epbnt` or `python3.exe .\index_formatter.py .\test_page_before_book.csv output_file_title  -f=epbnt`.
