@@ -73,6 +73,8 @@ options:\
 ## Input file column order
 
 The input file column order by default is `ebpnt`.
+
+The possible columns are:
 * Entry (e) - what you look up in an index
 * Book (b) - the book or volume it is found in
 * Chapter (c) - optional chapter
