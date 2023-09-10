@@ -31,7 +31,7 @@ It comes with built in help - so experiment.
 
 ## Builtin help
 
-Any options that have `-o OUTPUTTITLE` format are best written quotes if there are any characters in string that could mess with terminal (the capitalized OUTPUTTITLE indicates you have to supply a string if using the option) e.g. `-o "Today's index test"`. 
+Any options that have `-o OUTPUTTITLE` format are best written with the supplied string put in quotes if there are any characters in string that could mess with terminal (the capitalized OUTPUTTITLE indicates you have to supply a string in place of the capitalized option - here OUTPUTTITLE - if using the option) e.g. `-o "Today's index test"`. 
 
 `-f {ebpnt,ebcpnt,enbcpt,enbpt,bpent,bcpent}` also needs input after the `-f` option e.g. `-f ebcpnt`  (see **Input file column order** section below).
 
