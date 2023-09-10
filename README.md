@@ -18,10 +18,12 @@ or on Windows in Powershell the command is like:
 `python3.exe .\index_to_html.py .\test_book_before_page.csv -o "output_file_title"`
 
 Change `test_book_before_page.csv` and  `output_file_title` to appropriate values (though leave as is and it will test the script with the provided test file: test_book_before_page.csv.
+### A couple of options
+ `-t` processes the tags so each tag in tag column is prefixed to the main index term to create a new entry. This allows one to index a book by noting an entry and a list of words as tags in one column of a spreadsheet and then have this script use those words as prefixes for duplicate entries. If the words in the tag list are subjects, themes or topics this means the script is automatically making a separate entry but under the subject/theme/topic. E.g. putting `apple` as the entry with a tag column of `cooking,fruit,tree` would result in entries for `apple, cooking: apple, fruit: apple, tree: apple` etc.
+ 
+`-c` outputs a CSV (if one does not use `-c` then it outputs an HTML file)  - as the `-t` option will necessary produce a large number of new entries if tags are much used one may wish to manually prune some of those entries - and a CSV file open in a spreadsheet where one can right click and delete irrelevant rows - might be a good way to do that - hence the option of CSV output via the `-c` option.
 
-`-c` outputs a CSV and another flag `-t` processes the tags so each tag in tag column is prefixed to the main index term to create a new entry.
-
-On Windows in Powershell the command is like: 
+On Windows in Powershell the command using those options is like: 
 
 `python3.exe .\index_to_html.py .\test_book_before_page.csv -o "output_file_title" -c -t`
 
@@ -31,16 +33,16 @@ It comes with built in help - so experiment.
 
 Any options that have `-o OUTPUTTITLE` format are best written quotes if there are any characters in string that could mess with terminal (the capitalized OUTPUTTITLE indicates you have to supply a string if using the option) e.g. `-o "Today's index test"`. 
 
-`-f {ebpnt,ebcpnt,enbcpt,enbpt,bpent,bcpent}` also needs input after the `-f` option e.g. `-f ebcpnt`.
+`-f {ebpnt,ebcpnt,enbcpt,enbpt,bpent,bcpent}` also needs input after the `-f` option e.g. `-f ebcpnt`  (see **Input file column order** section below).
 
-
+Thanks to use of argparse library there is builtin help like the following:
 
 > usage: index_formatter.py [-h] [-o OUTPUTTITLE] [-f {ebpnt,ebcpnt,enbcpt,enbpt,bpent,bcpent}] [-t] [-ts TAGSEPARATOR] [-c] [-os OUTPUTSEPARATOR] [-v] [-vv] inputCSVfile\
 >takes a CSV file with columns for entry, book #, [chapter#] , page#, description and tags fields (not necessarily in that order and outputs order HTML or a CSV with tags prepended to the entry\
 positional arguments:\
   inputCSVfile          input CSV file to be processed - see README and help below re: order of columns needed\
 options:\
-  -h, --help            show this help message and exit\
+  -h, --help            show this help message and exit
 > 
 > -o OUTPUTTITLE, --outputtitle OUTPUTTITLE\
                         title used in naming output document and in HTML head\
@@ -54,13 +56,13 @@ options:\
 > -t, --tags            process tags so that entries are added with the tag prepended to the entry - using tag separator (defaults to : )\
 >\
 > -ts TAGSEPARATOR, --tagseparator TAGSEPARATOR\
-                        The separator between a tag and an entry when adding an entry of tag tagseparator entry default set to : - likely a colon followed by a space \
+                        The separator between a tag and an entry when adding an entry of tag tagseparator entry default set to : - likely a colon followed by a space 
 > 
 > -c, --csv             output file as CSV - if used in conjunctions\ 
 -os OUTPUTSEPARATOR, --outputseparator OUTPUTSEPARATOR\
-                        when outputting HTML the book, chapter, page numbers will be concatenated and joined this seperator is between them\
+                        when outputting HTML the book, chapter, page numbers will be concatenated and joined this seperator is between them
 > 
->  -v                    logging.INFO level of log verbosity\
+>  -v                    logging.INFO level of log verbosity
 > 
 >   -vv                   logging.DEBUG level of logging verbosity
 
