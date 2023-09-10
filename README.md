@@ -78,6 +78,7 @@ The possible columns are:
 * Entry (e) - what you look up in an index
 * Book (b) - the book or volume it is found in
 * Chapter (c) - optional chapter
+* Page (p) - page number
 * Notes (n) - the longer notes or description regarding an index entry
 * Tags (t) - a comma separated list of tags
 
