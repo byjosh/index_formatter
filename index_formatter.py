@@ -193,9 +193,9 @@ def create_master_dict(csv_input_filename: str) -> dict:  #
 
         for row in index_reader:
             if header:
-                print("SKIPPING 1ST ROW OF YOUR CSV - ASSUMING IT IS A HEADER ROW OF COLUMN LABELS")
-                print("IF FIRST ROW IS INDEX ENTRIES - SO SKIPPING IT WAS WRONG CHOICE : rerun but using -n option "
-                      "a.k.a --noheader option - see help/README")
+                print(row)
+                print("DOES LINE ABOVE THIS LOOK LIKE COLUMN LABELS? If 'No!' then rerun but add the -n option")
+                print("If answer was 'Yes, it did look like column labels' then all is well as without the -n option a.k.a --noheader option (see help/README) the first line is presumed to be column labels and is skipped")
                 header = False
                 continue
             logging.debug(f'row length is {len(row)}')
