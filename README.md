@@ -1,19 +1,32 @@
 # index_formatter
 Take a comma separated values file (CSV) for an index and output it as file
 
-If you don't run `git clone https://github.com/byjosh/index_formatter.git` commands as a matter of course the easiest way to get the code if you are reading this on github.com is click green Code button above & to right and you can download a ZIP file - which most folks can deal with.
+If you don't run `git clone https://github.com/byjosh/index_formatter.git` commands as a matter of course the easiest way to get the code if you are reading this on github.com is click green Code button above & to right and you can download a ZIP file - which most folks can deal with. 
+This gets you everything but the `-d` or `--docx` option for .docx file output (for use in word processing software such as Microsoft Word or LibreOffice) - if you need docx output see venv and pip install instructions.
 
+## venv and pip install instructions
+To get the docx export functionality one needs [python-docx](https://github.com/python-openxml/python-docx) - so best install this in a [Python virtual environment](https://docs.python.org/3/library/venv.html)
+
+Windows (in PowerShell) - with `your_username` and `your_code_folder` as fields that will change according to your choices - if you unzipped rather than cloned into `your_code_folder` simply start on line 2 not line 1 (assuming you have Python 3 installed)
+```
+PS C:\Users\your_username\Documents> git clone https://github.com/byjosh/index_formatter.git your_code_folder
+PS C:\Users\your_username\Documents> python3.exe -m venv .\your_code_folder\
+PS C:\Users\your_username\Documents> cd .\your_code_folder\
+PS C:\Users\your_username\Documents\your_code_folder> .\Scripts\Activate.ps1
+(your_code_folder) PS C:\Users\your_username\Documents\your_code_folder> pip install python-docx
+```
+You would now be ready to run the script on Windows - with docx export enabled.
 ## Running the script
 
 Put your input CSV file (called `test_book_before_page.csv` or `test_page_before_book.csv` in examples below depending on whether input file has book before page number column or vice versa) in same folder as the index_formatter.py script (so where you unzipped the files - or cloned them if you did a git clone).
 
-index_formatter.py is the script to run in the terminal or Powershell. The default input CSV column order is Entry, Book, Page, Notes, Tags (see **Input file column order** section below)
+index_formatter.py is the script to run in the terminal or PowerShell. The default input CSV column order is Entry, Book, Page, Notes, Tags (see **Input file column order** section below)
 
 Command to run in Mac/Linux terminal is like: 
 
 `python3 index_formatter.py test_book_before_page.csv -o "output_file_title"`
 
-or on Windows in Powershell the command is like: 
+or on Windows in PowerShell the command is like: 
 
 `python3.exe .\index_formatter.py .\test_book_before_page.csv -o "output_file_title"`
 
@@ -23,7 +36,7 @@ Change `test_book_before_page.csv` and  `output_file_title` to appropriate value
  
 `-c` outputs a CSV (if one does not use `-c` then it outputs an HTML file)  - as the `-t` option will necessary produce a large number of new entries if tags are much used one may wish to manually prune some of those entries - and a CSV file open in a spreadsheet where one can right click and delete irrelevant rows - might be a good way to do that - hence the option of CSV output via the `-c` option.
 
-On Windows in Powershell the command using those options is like: 
+On Windows in PowerShell the command using those options is like: 
 
 `python3.exe .\index_formatter.py .\test_book_before_page.csv -o "output_file_title" -c -t`
 
@@ -101,3 +114,6 @@ The order seen for the page numbers for each entry will work best if all book re
 
 ## Test files
 `test_book_before_page.csv` and `test_page_before_book.csv` are provided as test files. With the latter the optional `-f=epbnt` argument is needed as final argument like `python3 index_formatter.py test_page_before_book.csv output_file_title  -f=epbnt` or `python3.exe .\index_formatter.py .\test_page_before_book.csv output_file_title  -f=epbnt`.
+
+Trademark footnote: Microsoft, PowerShell, Windows, Microsoft Word, are trademarks of the Microsoft group of companies. Linux is a trademark of Linus Torvalds. The Document Foundation and 
+LibreOffice are trademarks of The Document Foundation. Any other trademarks are property of their owners. The mention of the trademarks is solely for the proper acknowledgement of their ownership - no linkage to this project or endorsement of it is implied by the mention of the trademarks.

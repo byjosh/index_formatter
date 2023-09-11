@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#  using this needs to function in a venv - the usual /usr/bin/env python3 can misconfigure it
 # This file is from
 # https://github.com/byjosh/index_formattter
 # licensed under https://www.gnu.org/licenses/gpl-3.0.html
@@ -11,6 +11,22 @@ from os import path
 import logging
 import html
 import argparse
+# test if we have python-docx available
+from importlib import resources
+docx_found = 'xxxx'
+try:
+    docx_found = resources.files('docx')
+except ModuleNotFoundError:
+    print("ModuleNotFoundError for docx - if you want docx output: create a virtual environment and run: pip install python-docx")
+
+def test_for_docx(docx_found):
+    if str(docx_found)[-4:] == 'docx':
+        return True
+    else:
+        return False
+
+logging.info(f'python-docx found for docx export = {test_for_docx(docx_found)}')
+
 
 # if you want to see the master dictionary created change logging.FATAL to logging.DEBUG
 loglevel = logging.FATAL
@@ -33,8 +49,13 @@ field_orders = ['ebpnt',
 tagseparator = ": "
 outputseparator = ' -- '
 
+# Change docx help message according to availability of python-docx
+docx_help = 'Not available on this install currently - but see the README for using a virtual environment and pip install python-docx to allow docx file export (done successfully this help message will change) - .docx files can be used in wordprocessing software'
+if test_for_docx(docx_found):
+    docx_help = 'you can set this option to export a docx file - docx files can be used in wordprocessing software (congratulations on using pip to enable this option)'
+
 parser = argparse.ArgumentParser(prog="index_as_html.py",
-                                 description="takes a CSV file with columns for entry, book #, [chapter#] , page#, description and tags fields (not necessarily in that order and outputs order HTML or a CSV with tags prepended to the entry - if your output has weird characters try saving your input as utf-8 (the format for output)")
+                                 description="takes a CSV file with columns for entry, book #, [chapter#] , page#, description and tags fields (not necessarily in that order and outputs order HTML or a CSV with tags prepended to the entry - if your output has weird characters try saving your input as utf-8 (the format for output) - for docx output: see README and install python-docx using pip")
 
 parser.add_argument('inputCSVfile',
                     help='input CSV file to be processed - see README and help below re: order of columns needed')
@@ -50,6 +71,7 @@ parser.add_argument('-os', '--outputseparator', action='store',
                     help='when outputting HTML the book, chapter, page numbers will be concatenated and joined this seperator is between them')
 parser.add_argument('-v', action='store_true', help='logging.INFO level of log verbosity')
 parser.add_argument('-vv', action='store_true', help='logging.DEBUG level of logging verbosity')
+parser.add_argument('-d','--docx', action='store_true', help=f'{docx_help} ')
 
 
 args = parser.parse_args()
@@ -180,7 +202,7 @@ def create_master_dict(csv_input_filename: str) -> dict:  #
     return master_dict
 
 
-def create_page_html():
+def create_page_html(sorted_keys,entries):
     """Main function creating HTML for output"""
 
     def html_item_output(item):
@@ -192,8 +214,7 @@ def create_page_html():
         return f'<div class="moredetails"><span class="location">{html.escape(item.location.book, quote=True)}{html.escape(outputseparator)}{html.escape(chapter)}{html.escape(item.location.page, quote=True)}</span>\
         <span class="notes">{html.escape(item.notes, quote=True)}</span></div>'
 
-    entries = create_master_dict(csv_input_filename)
-    sorted_keys = sorted(entries.keys(), key=str.casefold)
+
     output = html_page_components.get_html_header(title)
 
     for key in sorted_keys:
@@ -207,22 +228,21 @@ def create_page_html():
     return output
 
 
-def write_html_file(now):
+def write_html_file(now,sorted_keys,entries):
     output_name = f'{title}_as_html_{now}.html'
     with open(output_name, mode='w', encoding='utf-8') as file:
-        file.write(create_page_html())
+        file.write(create_page_html(sorted_keys,entries))
     output_file_message(output_name)
     logging.debug(f'The arguments provided to script were {sys.argv[1:]} as sys.argv and as argparse {args}')
 
 
-def write_csv_file(now):
+def write_csv_file(now,sorted_keys,entries):
     output_name = f'{title}_as_csv_{now}.csv'
     import csv
 
     with open(output_name, 'w', encoding='utf-8') as file:
         writer = csv.writer(file, dialect='excel')
-        entries = create_master_dict(csv_input_filename)
-        sorted_keys = sorted(entries.keys(), key=str.casefold)
+
         for key in sorted_keys:
             list_of_Entry_tuples = sorted(entries[key], key=tuple_string)
             for item in list_of_Entry_tuples:
@@ -238,17 +258,65 @@ def write_csv_file(now):
 
     output_file_message(output_name)
 
+def write_docx_file(now,sorted_keys,entries):
+    """Write a docx document - use the alphabet as guide when to insert a header"""
+    from docx import Document
+    from docx.shared import Mm
+    from docx.shared import Pt
+    output_name = f'{title}_as_docx_{now}.docx'
+    document = Document()
+    alphabet = list('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+    prev_char = None
+
+    for key in sorted_keys:
+        first_char = f'{key[0]}'.upper()
+        if first_char in alphabet and first_char != prev_char:
+
+            document.add_paragraph(first_char,style='Heading 2')
+            style = document.styles['Heading 2']
+            style.font.size = Pt(48)
+
+            prev_char = first_char
+        list_of_Entry_tuples = sorted(entries[key], key=tuple_string)
+        p = document.add_paragraph(style='Normal')
+        p_format = p.paragraph_format
+        p_format.first_line_indent = Mm(-8)
+        p.add_run(f'{key} ').bold = True
+        for item in list_of_Entry_tuples:
+            tags = ''
+            if item.taglist:
+                tags = item.taglist
+            # TODO: tags output to CSV file - so tag: entry is possible but so is tag: tag: tag: entry if one ran the script recursively - desirable or not?
+            if item.chapter:
+                p.add_run(f'{item.location.book}{outputseparator}{item.chapter}{outputseparator}{item.location.page} ').bold = True
+            if not item.chapter:
+                p.add_run(
+                    f'{item.location.book}{outputseparator}{item.location.page} ').bold = True
+            p.add_run(f'{item.notes}\n')
+    document.save(output_name)
+    output_file_message(output_name)
 
 def write_to_file():
     """writes output to a file"""
     # write the output to a file -
     now = time.strftime('%Y%m%d-%H%M%S')
-    if not args.csv:
+    entries = create_master_dict(csv_input_filename)
+    sorted_keys = sorted(entries.keys(), key=str.casefold)
+    if not args.csv and not args.docx:
         logging.info("writing HTML file")
-        write_html_file(now)
+        write_html_file(now,sorted_keys,entries)
+
     if args.csv:
         logging.info("writing CSV file")
-        write_csv_file(now)
+        write_csv_file(now,sorted_keys,entries)
+    try:
+        if args.docx and test_for_docx(docx_found):
+            write_docx_file(now,sorted_keys,entries)
+        elif args.docx and test_for_docx(docx_found) is False:
+           print("Sorry python-docx module for docx output not found - trying installing it with pip")
+    except Exception as e:
+        print("About to raise a docx exception")
+        raise e
 
 
 if __name__ == "__main__":
