@@ -1,5 +1,8 @@
 # index_formatter
-Take a comma separated values file (CSV) for an index and output it as file
+Take a comma separated values file (CSV) containing your index and output it as HTML file (default), CSV (use `-c` option), or DOCX (use `-d` - requires installing python-docx with pip - see **venv and pip install instructions** section but can be used for HTML and CSV without using pip). Skips first row of your input CSV file assuming it has a header row of column labels - if it lacks a header use `-n` option (`--noheader`) to ensure all rows are included in output.
+
+Default column order assumed in your CSV is Entry (what you look up), Book (book or volume number), Page (page number), Notes (further notes about the entry), Tags (column containing comma separated list of tags - prepended to Entry to make new entries when `-t` is used). That order as used for `-f` option would be `-f ebpnt` - see **Input file column order** section below for more explanation and column orders.
+
 
 If you don't run `git clone https://github.com/byjosh/index_formatter.git` commands as a matter of course the easiest way to get the code if you are reading this on github.com is click green Code button above & to right and you can download a ZIP file - which most folks can deal with. 
 This gets you everything but the `-d` or `--docx` option for .docx file output (for use in word processing software such as Microsoft Word or LibreOffice) - if you need docx output see venv and pip install instructions.
@@ -60,11 +63,11 @@ It comes with built in help - so experiment.
 
 Any options that have `-o OUTPUTTITLE` format are best written with the supplied string put in quotes if there are any characters in string that could mess with terminal (the capitalized OUTPUTTITLE indicates you have to supply a string in place of the capitalized option - here OUTPUTTITLE - if using the option) e.g. `-o "Today's index test"`. 
 
-`-f {ebpnt,ebcpnt,enbcpt,enbpt,bpent,bcpent}` also needs input after the `-f` option e.g. `-f ebcpnt`  (see **Input file column order** section below).
+`-f {ebpnt,epbnt,ebcpnt,enbcpt,enbpt,enbcpt,bpent,bcpent,entbp,entbcp}` also needs input after the `-f` option e.g. `-f ebcpnt`  (see **Input file column order** section below).
 
 Thanks to use of argparse library there is builtin help like the following:
 
-> usage: index_formatter.py [-h] [-o OUTPUTTITLE] [-f {ebpnt,ebcpnt,enbcpt,enbpt,bpent,bcpent}] [-t] [-ts TAGSEPARATOR] [-c] [-os OUTPUTSEPARATOR] [-v] [-vv] [-d] inputCSVfile\
+> usage: index_formatter.py [-h] [-o OUTPUTTITLE] [-f {ebpnt,epbnt,ebcpnt,enbcpt,enbpt,enbcpt,bpent,bcpent,entbp,entbcp}] [-t] [-ts TAGSEPARATOR] [-c] [-os OUTPUTSEPARATOR] [-v] [-vv] [-d] inputCSVfile\
 >takes a CSV file with columns for entry, book #, [chapter#] , page#, description and tags fields (not necessarily in that order and outputs order HTML or a CSV with tags prepended to the entry\
 positional arguments:\
   inputCSVfile          input CSV file to be processed - see README and help below re: order of columns needed\
@@ -74,13 +77,14 @@ options:\
 > -o OUTPUTTITLE, --outputtitle OUTPUTTITLE\
                         title used in naming output document and in HTML head\
  > \
-> -f {ebpnt,ebcpnt,enbcpt,enbpt,bpent,bcpent}, --fields {ebpnt,ebcpnt,enbcpt,enbpt,bpent,bcpent}\
+> -f {ebpnt,epbnt,ebcpnt,enbcpt,enbpt,enbcpt,bpent,bcpent,entbp,entbcp}, --fields {ebpnt,epbnt,ebcpnt,enbcpt,enbpt,enbcpt,bpent,bcpent,entbp,entbcp}\
                         specify order of columns (fields) in your CSV file where each letter is initial letter of following (might call your columns slightly differently but this make clear function of each column): Entry      
                         (what you look up in index e.g. apple), Book (or volume e.g. vol 1) , Chapter [optional], Notes (notes or description on Entry item e.g. popular fruit), Tags [optional in sense program will check if     
                         this is empty column] - comma separated list of classifications that might apply to the entry e.g. for apple depending on context: fruit, tree, cooking, literacy, physics, Abrahamic religion (those are  
                         just examples - in botanical context just fruit and tree would be relevant)\
 > \
-> -t, --tags            process tags so that entries are added with the tag prepended to the entry - using tag separator (defaults to : )\
+>  -t, --tags            process tags so that entries are added with the tag prepended to the entry that had tags in the tags column - using tag separator (defaults to : ) - e.g. for an entry of "apple" with tags column of "fruit,cooking" the result would be an entry for "apple" plus entries for "cooking: apple" & "fruit: apple" with notes the same as in the row that had the tags - if you have 6 apple entries but tags only found on row of first apple entry then only that row will be used to make further entries - use tags in tags column on each row you want processed by this option
+\
 >\
 > -ts TAGSEPARATOR, --tagseparator TAGSEPARATOR\
                         The separator between a tag and an entry when adding an entry of tag tagseparator entry default set to : - likely a colon followed by a space 

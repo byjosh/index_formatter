@@ -43,6 +43,7 @@ field_orders = ['ebpnt',
                 'ebcpnt',
                 'enbcpt',
                 'enbpt',
+                'enbcpt',
                 'bpent',
                 'bcpent',
                 'entbp',
@@ -80,8 +81,8 @@ parser.add_argument('-f', '--fields', action='store', choices=field_orders,
                          f'fruit, tree, cooking, literacy, physics, Abrahamic religion (those are just examples - in '
                          f'botanical context just fruit and tree would be relevant)')
 parser.add_argument('-t', '--tags', action='store_true',
-                    help=f'process tags so that entries are added with the tag prepended to the entry - using tag '
-                         f'separator (defaults to {tagseparator} )')
+                    help=f'process tags so that entries are added with the tag prepended to the entry that had tags in the tags column - using tag '
+                         f'separator (defaults to {tagseparator} ) - e.g. for an entry of "apple" with tags column of "fruit,cooking" the result would be an entry for "apple" plus entries for "cooking: apple" &  "fruit: apple" with notes the same as in the row that had the tags - if you have 6 apple entries but tags only found on row of first apple entry then only that row will be used to make further entries - use tags in tags column on each row you want processed by this option')
 parser.add_argument('-ts', '--tagseparator', action='store',
                     help=f'The separator between a tag and an entry when adding an entry of tag tagseparator entry '
                          f'default set to {tagseparator} - likely a colon followed by a space')
