@@ -96,6 +96,9 @@ options:\
 > -d, --docx            you can set this option to export a docx file - docx files can be used in
                         wordprocessing software (congratulations on using pip to enable this
                         option)
+> 
+> -n, --noheader        process all rows of CSV as there is no header row - default is to ignore 1st row assuming it is a header with column labels
+
 
 
 
@@ -103,7 +106,7 @@ options:\
 
 ## Input file column order
 
-The input file column order by default is `ebpnt`.
+The input file column order by default is `ebpnt`. The default is also to assume that the first line of input CSV is a header row of column labels (if first row is data use the `-n` or `--noheader` option)
 
 The possible columns are:
 * Entry (e) - what you look up in an index

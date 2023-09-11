@@ -13,19 +13,22 @@ import html
 import argparse
 # test if we have python-docx available
 from importlib import resources
+
 docx_found = 'xxxx'
 try:
     docx_found = resources.files('docx')
 except ModuleNotFoundError:
-    print("ModuleNotFoundError for docx - if you want docx output: create a virtual environment and run: pip install python-docx")
+    print("ModuleNotFoundError for python-docx - if you want docx output: see README on using virtual environment and "
+          "pip to enable docx output as option")
 
-def test_for_docx(docx_found):
-    if str(docx_found)[-4:] == 'docx':
+
+def test_for_docx(mod_location):
+    if str(mod_location)[-4:] == 'docx':
         return True
     else:
         return False
 
-logging.info(f'python-docx found for docx export = {test_for_docx(docx_found)}')
+
 
 
 # if you want to see the master dictionary created change logging.FATAL to logging.DEBUG
@@ -50,29 +53,48 @@ tagseparator = ": "
 outputseparator = ' -- '
 
 # Change docx help message according to availability of python-docx
-docx_help = 'Not available on this install currently - but see the README for using a virtual environment and pip install python-docx to allow docx file export (done successfully this help message will change) - .docx files can be used in wordprocessing software'
+docx_help = ('Not available on this install currently - but see the README for using a virtual environment and pip '
+             'install python-docx to allow docx file export (done successfully this help message will change) - .docx '
+             'files can be used in wordprocessing software')
 if test_for_docx(docx_found):
-    docx_help = 'you can set this option to export a docx file - docx files can be used in wordprocessing software (congratulations on using pip to enable this option)'
+    docx_help = ('you can set this option to export a docx file - docx files can be used in wordprocessing software ('
+                 'congratulations on using pip to enable this option)')
 
 parser = argparse.ArgumentParser(prog="index_as_html.py",
-                                 description="takes a CSV file with columns for entry, book #, [chapter#] , page#, description and tags fields (not necessarily in that order and outputs order HTML or a CSV with tags prepended to the entry - if your output has weird characters try saving your input as utf-8 (the format for output) - for docx output: see README and install python-docx using pip")
+                                 description="takes a CSV file with columns for entry, book #, [chapter#] , page#, "
+                                             "description and tags fields (not necessarily in that order and outputs "
+                                             "order HTML or a CSV with tags prepended to the entry - if your output "
+                                             "has weird characters try saving your input as utf-8 (the format for "
+                                             "output) - for docx output: see README and install python-docx using pip")
 
 parser.add_argument('inputCSVfile',
                     help='input CSV file to be processed - see README and help below re: order of columns needed')
 parser.add_argument('-o', '--outputtitle', action='store', help="title used in naming output document and in HTML head")
 parser.add_argument('-f', '--fields', action='store', choices=field_orders,
-                    help=f'specify order of columns (fields) in your CSV file where each letter is initial letter of following (might call your columns slightly differently but this make clear function of each column):\nEntry (what you look up in index e.g. apple),\nBook (or volume e.g. vol 1) , \nChapter [optional], Notes (notes or description on Entry item e.g. popular fruit), \nTags [optional in sense program will check if this is empty column] - comma separated list of classifications that might apply to the entry e.g. for apple depending on context: fruit, tree, cooking, literacy, physics, Abrahamic religion (those are just examples - in botanical context just fruit and tree would be relevant)')
+                    help=f'specify order of columns (fields) in your CSV file where each letter is initial letter of '
+                         f'following (might call your columns slightly differently but this make clear function of '
+                         f'each column):\nEntry (what you look up in index e.g. apple),\nBook (or volume e.g. vol 1) '
+                         f', \nChapter [optional], Notes (notes or description on Entry item e.g. popular fruit), '
+                         f'\nTags [optional in sense program will check if this is empty column] - comma separated '
+                         f'list of classifications that might apply to the entry e.g. for apple depending on context: '
+                         f'fruit, tree, cooking, literacy, physics, Abrahamic religion (those are just examples - in '
+                         f'botanical context just fruit and tree would be relevant)')
 parser.add_argument('-t', '--tags', action='store_true',
-                    help=f'process tags so that entries are added with the tag prepended to the entry - using tag separator (defaults to {tagseparator} )')
+                    help=f'process tags so that entries are added with the tag prepended to the entry - using tag '
+                         f'separator (defaults to {tagseparator} )')
 parser.add_argument('-ts', '--tagseparator', action='store',
-                    help=f'The separator between a tag and an entry when adding an entry of tag tagseparator entry default set to {tagseparator} - likely a colon followed by a space')
+                    help=f'The separator between a tag and an entry when adding an entry of tag tagseparator entry '
+                         f'default set to {tagseparator} - likely a colon followed by a space')
 parser.add_argument('-c', '--csv', action='store_true', help='output file as CSV - if used in conjunctions')
 parser.add_argument('-os', '--outputseparator', action='store',
-                    help='when outputting HTML the book, chapter, page numbers will be concatenated and joined this seperator is between them')
+                    help='when outputting HTML the book, chapter, page numbers will be concatenated and joined this '
+                         'seperator is between them')
 parser.add_argument('-v', action='store_true', help='logging.INFO level of log verbosity')
 parser.add_argument('-vv', action='store_true', help='logging.DEBUG level of logging verbosity')
-parser.add_argument('-d','--docx', action='store_true', help=f'{docx_help} ')
-
+parser.add_argument('-d', '--docx', action='store_true', help=f'{docx_help} ')
+parser.add_argument('-n', '--noheader', action='store_true',
+                    help=f'process all rows of CSV as there is no header row - default is to ignore 1st row assuming '
+                         f'it is a header with column labels')
 
 args = parser.parse_args()
 
@@ -82,6 +104,7 @@ if args.v:
 if args.vv:
     loglevel = logging.DEBUG
 logging.basicConfig(level=loglevel)
+logging.info(f'python-docx found for docx export = {test_for_docx(docx_found)}')
 logging.info(f'CSV dialects are {csv.list_dialects()}')
 logging.info(f'arguments passed are {args}')
 
@@ -120,7 +143,8 @@ def tuple_string(entry_tuple):
     elif not book_num.isdigit() or not page_num.isdigit():
         # it went wrong - use a string
         print(
-            f'For better ordering have last character of {entry_tuple.location.book} as number not {book_num} and {page_num} as number')
+            f'For better ordering have last character of {entry_tuple.location.book} \
+            as number not {book_num} and {page_num} as number')
         return html.escape(f'{book_num}-{page_num}', quote=True)
 
 
@@ -164,9 +188,16 @@ def create_master_dict(csv_input_filename: str) -> dict:  #
         tags = order.find('t')
         chapter_no = None
         taglist = None
+        header = not args.noheader
 
         for row in index_reader:
-            logging.info(f'row length is {len(row)}')
+            if header:
+                print("SKIPPING 1ST ROW OF YOUR CSV - ASSUMING IT IS A HEADER ROW OF COLUMN LABELS")
+                print("IF FIRST ROW IS INDEX ENTRIES - SO SKIPPING IT WAS WRONG CHOICE : rerun but using -n option "
+                      "a.k.a --noheader option - see help/README")
+                header = False
+                continue
+            logging.debug(f'row length is {len(row)}')
             if chapter != -1:
                 chapter_no = row[chapter]
             else:
@@ -202,7 +233,7 @@ def create_master_dict(csv_input_filename: str) -> dict:  #
     return master_dict
 
 
-def create_page_html(sorted_keys,entries):
+def create_page_html(sorted_keys, entries):
     """Main function creating HTML for output"""
 
     def html_item_output(item):
@@ -213,7 +244,6 @@ def create_page_html(sorted_keys,entries):
             chapter = item.chapter + outputseparator
         return f'<div class="moredetails"><span class="location">{html.escape(item.location.book, quote=True)}{html.escape(outputseparator)}{html.escape(chapter)}{html.escape(item.location.page, quote=True)}</span>\
         <span class="notes">{html.escape(item.notes, quote=True)}</span></div>'
-
 
     output = html_page_components.get_html_header(title)
 
@@ -228,16 +258,16 @@ def create_page_html(sorted_keys,entries):
     return output
 
 
-def write_html_file(now,sorted_keys,entries):
-    output_name = f'{title}_as_html_{now}.html'
+def write_html_file(now, sorted_keys, entries,skip):
+    output_name = f'{title}_as_html_{now}_{skip}.html'
     with open(output_name, mode='w', encoding='utf-8') as file:
-        file.write(create_page_html(sorted_keys,entries))
+        file.write(create_page_html(sorted_keys, entries))
     output_file_message(output_name)
     logging.debug(f'The arguments provided to script were {sys.argv[1:]} as sys.argv and as argparse {args}')
 
 
-def write_csv_file(now,sorted_keys,entries):
-    output_name = f'{title}_as_csv_{now}.csv'
+def write_csv_file(now, sorted_keys, entries,skip):
+    output_name = f'{title}_as_csv_{now}_{skip}.csv'
     import csv
 
     with open(output_name, 'w', encoding='utf-8') as file:
@@ -249,7 +279,8 @@ def write_csv_file(now,sorted_keys,entries):
                 tags = ''
                 if item.taglist:
                     tags = item.taglist
-                # TODO: tags output to CSV file - so tag: entry is possible but so is tag: tag: tag: entry if one ran the script recursively - desirable or not?
+                # TODO: tags output to CSV file - so tag: entry is possible but so is tag: tag: tag: entry if one ran
+                #  the script recursively - desirable or not?
                 if item.chapter:
                     writer.writerow([key, item.location.book, item.chapter, item.location.page, item.notes,
                                      tags])
@@ -258,12 +289,13 @@ def write_csv_file(now,sorted_keys,entries):
 
     output_file_message(output_name)
 
-def write_docx_file(now,sorted_keys,entries):
+
+def write_docx_file(now, sorted_keys, entries,skip):
     """Write a docx document - use the alphabet as guide when to insert a header"""
     from docx import Document
     from docx.shared import Mm
     from docx.shared import Pt
-    output_name = f'{title}_as_docx_{now}.docx'
+    output_name = f'{title}_as_docx_{now}_{skip}.docx'
     document = Document()
     alphabet = list('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
     prev_char = None
@@ -271,8 +303,7 @@ def write_docx_file(now,sorted_keys,entries):
     for key in sorted_keys:
         first_char = f'{key[0]}'.upper()
         if first_char in alphabet and first_char != prev_char:
-
-            document.add_paragraph(first_char,style='Heading 2')
+            document.add_paragraph(first_char, style='Heading 2')
             style = document.styles['Heading 2']
             style.font.size = Pt(48)
 
@@ -283,12 +314,9 @@ def write_docx_file(now,sorted_keys,entries):
         p_format.first_line_indent = Mm(-8)
         p.add_run(f'{key} ').bold = True
         for item in list_of_Entry_tuples:
-            tags = ''
-            if item.taglist:
-                tags = item.taglist
-            # TODO: tags output to CSV file - so tag: entry is possible but so is tag: tag: tag: entry if one ran the script recursively - desirable or not?
             if item.chapter:
-                p.add_run(f'{item.location.book}{outputseparator}{item.chapter}{outputseparator}{item.location.page} ').bold = True
+                p.add_run(
+                    f'{item.location.book}{outputseparator}{item.chapter}{outputseparator}{item.location.page} ').bold = True
             if not item.chapter:
                 p.add_run(
                     f'{item.location.book}{outputseparator}{item.location.page} ').bold = True
@@ -296,24 +324,36 @@ def write_docx_file(now,sorted_keys,entries):
     document.save(output_name)
     output_file_message(output_name)
 
+
 def write_to_file():
     """writes output to a file"""
     # write the output to a file -
     now = time.strftime('%Y%m%d-%H%M%S')
     entries = create_master_dict(csv_input_filename)
     sorted_keys = sorted(entries.keys(), key=str.casefold)
+    def skipped_first_row(header):
+        if header:
+            return 'skipped_first_row'
+        else:
+            return 'all_rows'
+
+    skipped = skipped_first_row(not args.noheader)
+
     if not args.csv and not args.docx:
         logging.info("writing HTML file")
-        write_html_file(now,sorted_keys,entries)
+        write_html_file(now, sorted_keys, entries, skipped)
 
     if args.csv:
         logging.info("writing CSV file")
-        write_csv_file(now,sorted_keys,entries)
+        # TODO: keep the first row of a CSV and intelligently swap the columns for output as CSV file
+        write_csv_file(now, sorted_keys, entries, skipped)
     try:
         if args.docx and test_for_docx(docx_found):
-            write_docx_file(now,sorted_keys,entries)
+            write_docx_file(now, sorted_keys, entries,skipped)
         elif args.docx and test_for_docx(docx_found) is False:
-           print("Sorry python-docx module for docx output not found - trying installing it with pip as per instructions in README")
+            print(
+                "Sorry python-docx module for docx output not found - trying installing it with pip as per "
+                "instructions in README")
     except Exception as e:
         print("About to raise a docx exception")
         raise e
