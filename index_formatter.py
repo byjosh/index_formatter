@@ -313,7 +313,7 @@ def write_to_file():
         if args.docx and test_for_docx(docx_found):
             write_docx_file(now,sorted_keys,entries)
         elif args.docx and test_for_docx(docx_found) is False:
-           print("Sorry python-docx module for docx output not found - trying installing it with pip")
+           print("Sorry python-docx module for docx output not found - trying installing it with pip as per instructions in README")
     except Exception as e:
         print("About to raise a docx exception")
         raise e
