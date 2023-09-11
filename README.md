@@ -16,6 +16,20 @@ PS C:\Users\your_username\Documents\your_code_folder> .\Scripts\Activate.ps1
 (your_code_folder) PS C:\Users\your_username\Documents\your_code_folder> pip install python-docx
 ```
 You would now be ready to run the script on Windows - with docx export enabled.
+
+On Linux in a terminal (where `your_username@yourcomputer:~/Documents$` is the prompt and what comes after the `$` is what you enter) you could use the following commands (again if you unzipped the code into `your_code_folder` rather than using a `git clone` command then proceed from the 2nd line presuming the terminal is open in the folder that contains `your_code_folder`.
+```
+your_username@yourcomputer:~/Documents$  git clone https://github.com/byjosh/index_formatter.git your_code_folder
+your_username@yourcomputer:~/Documents$ python3 -m venv your_code_folder/
+your_username@yourcomputer:~/Documents$ cd your_code_folder/
+your_username@yourcomputer:~/Documents/your_code_folder$ source bin/activate
+(your_code_folder) your_username@yourcomputer:~/Documents/your_code_folder$ pip install python-docx
+```
+Continuing this Linux example the next command to run to take advantage of the new docx export option is:-
+```
+(your_code_folder) your_username@yourcomputer:~/Documents/your_code_folder$ python3 index_formatter.py test_book_before_page.csv -d -t
+```
+The `-t` option at the end of preceding command uses any tags present to construct new entries prefixed with the tags.
 ## Running the script
 
 Put your input CSV file (called `test_book_before_page.csv` or `test_page_before_book.csv` in examples below depending on whether input file has book before page number column or vice versa) in same folder as the index_formatter.py script (so where you unzipped the files - or cloned them if you did a git clone).
@@ -50,7 +64,7 @@ Any options that have `-o OUTPUTTITLE` format are best written with the supplied
 
 Thanks to use of argparse library there is builtin help like the following:
 
-> usage: index_formatter.py [-h] [-o OUTPUTTITLE] [-f {ebpnt,ebcpnt,enbcpt,enbpt,bpent,bcpent}] [-t] [-ts TAGSEPARATOR] [-c] [-os OUTPUTSEPARATOR] [-v] [-vv] inputCSVfile\
+> usage: index_formatter.py [-h] [-o OUTPUTTITLE] [-f {ebpnt,ebcpnt,enbcpt,enbpt,bpent,bcpent}] [-t] [-ts TAGSEPARATOR] [-c] [-os OUTPUTSEPARATOR] [-v] [-vv] [-d] inputCSVfile\
 >takes a CSV file with columns for entry, book #, [chapter#] , page#, description and tags fields (not necessarily in that order and outputs order HTML or a CSV with tags prepended to the entry\
 positional arguments:\
   inputCSVfile          input CSV file to be processed - see README and help below re: order of columns needed\
@@ -78,6 +92,10 @@ options:\
 >  -v                    logging.INFO level of log verbosity
 > 
 >   -vv                   logging.DEBUG level of logging verbosity
+> 
+> -d, --docx            you can set this option to export a docx file - docx files can be used in
+                        wordprocessing software (congratulations on using pip to enable this
+                        option)
 
 
 
