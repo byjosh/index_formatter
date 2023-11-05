@@ -61,7 +61,7 @@ if test_for_docx(docx_found):
     docx_help = ('you can set this option to export a docx file - docx files can be used in wordprocessing software ('
                  'congratulations on using pip to enable this option)')
 
-parser = argparse.ArgumentParser(prog="index_as_html.py",
+parser = argparse.ArgumentParser(prog="index_formatter.py",
                                  description="takes a CSV file with columns for entry, book #, [chapter#] , page#, "
                                              "description and tags fields (not necessarily in that order and outputs "
                                              "order HTML or a CSV with tags prepended to the entry - if your output "
