@@ -18,6 +18,8 @@ PS C:\Users\your_username\Documents> cd .\your_code_folder\
 PS C:\Users\your_username\Documents\your_code_folder> .\Scripts\Activate.ps1
 (your_code_folder) PS C:\Users\your_username\Documents\your_code_folder>  python3.exe -m pip install python-docx
 ```
+**Important note re: last line of `python3.exe -m pip install python-docx` - if not preceded by the  `.\Scripts\Activate.ps1` on previous line this would not install in the virtual environment and if run as `pip install python-docx` it would appear to run - but the docx module would not be available for the script in the correct manner so one needs the `python3.exe -m` prefix i.e. use the full `python3.exe -m pip install python-docx` as shown**
+
 You would now be ready to run the script on Windows - with docx export enabled.
 
 On Linux in a terminal (where `your_username@yourcomputer:~/Documents$` is the prompt and what comes after the `$` is what you enter) you could use the following commands (again if you unzipped the code into `your_code_folder` rather than using a `git clone` command then proceed from the 2nd line presuming the terminal is open in the folder that contains `your_code_folder`.
