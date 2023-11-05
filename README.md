@@ -16,7 +16,7 @@ PS C:\Users\your_username\Documents> git clone https://github.com/byjosh/index_f
 PS C:\Users\your_username\Documents> python3.exe -m venv .\your_code_folder\
 PS C:\Users\your_username\Documents> cd .\your_code_folder\
 PS C:\Users\your_username\Documents\your_code_folder> .\Scripts\Activate.ps1
-(your_code_folder) PS C:\Users\your_username\Documents\your_code_folder> pip install python-docx
+(your_code_folder) PS C:\Users\your_username\Documents\your_code_folder>  python3.exe -m pip install python-docx
 ```
 You would now be ready to run the script on Windows - with docx export enabled.
 
