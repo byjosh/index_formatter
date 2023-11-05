@@ -203,7 +203,9 @@ def create_master_dict(csv_input_filename: str) -> dict:  #
                 chapter_no = row[chapter]
             else:
                 chapter_no = None
-            if len(row) == len(order):
+            """Check length of row is at least as long as the format - but allow longer rows 
+            as otherwise columns filled with empty rows will cause the taglist to be set to None - despite using -t """    
+            if len(row) >= len(order):
                 taglist = row[tags]
             else:
                 taglist = None
