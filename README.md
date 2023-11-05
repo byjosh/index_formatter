@@ -13,12 +13,14 @@ To get the docx export functionality one needs [python-docx](https://github.com/
 Windows (in PowerShell) - with `your_username` and `your_code_folder` as fields that will change according to your choices - if you unzipped rather than cloned into `your_code_folder` simply start on line 2 not line 1 (assuming you have Python 3 installed)
 ```
 PS C:\Users\your_username\Documents> git clone https://github.com/byjosh/index_formatter.git your_code_folder
-PS C:\Users\your_username\Documents> python3.exe -m venv .\your_code_folder\
+PS C:\Users\your_username\Documents> python.exe -m venv .\your_code_folder\
 PS C:\Users\your_username\Documents> cd .\your_code_folder\
 PS C:\Users\your_username\Documents\your_code_folder> .\Scripts\Activate.ps1
-(your_code_folder) PS C:\Users\your_username\Documents\your_code_folder>  python3.exe -m pip install python-docx
+(your_code_folder) PS C:\Users\your_username\Documents\your_code_folder>  python.exe -m pip install python-docx
 ```
-**Important note re: last line of `python3.exe -m pip install python-docx` - if not preceded by the  `.\Scripts\Activate.ps1` on previous line this would not install in the virtual environment and if run as `pip install python-docx` it would appear to run - but the docx module would not be available for the script in the correct manner so one needs the `python3.exe -m` prefix i.e. use the full `python3.exe -m pip install python-docx` as shown**
+**Important note re: last line of `python.exe -m pip install python-docx` - if not preceded by the  `.\Scripts\Activate.ps1` on previous line this would not install in the virtual environment and if run as `pip install python-docx` it would appear to run - but the docx module would not be available for the script in the correct manner so one needs the `python.exe -m` prefix i.e. use the full `python.exe -m pip install python-docx` as shown**
+
+Re: note above - pip packages can install in, I think, the virtual environment, in a version of Python in your user directory and system-wide - the above works to install in the virtual environment I believe.
 
 You would now be ready to run the script on Windows - with docx export enabled.
 
